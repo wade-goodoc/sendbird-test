@@ -8,9 +8,13 @@ import { useRouter } from 'next/navigation';
 
 type CounselingStartControlProps = {
   size?: 'small' | 'medium';
+  therapySendbirdId?: string;
 };
 
-const CounselingStartControl = ({ size = 'medium' }: CounselingStartControlProps) => {
+const CounselingStartControl = ({
+  size = 'medium',
+  therapySendbirdId
+}: CounselingStartControlProps) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const router = useRouter();
@@ -48,7 +52,9 @@ const CounselingStartControl = ({ size = 'medium' }: CounselingStartControlProps
             </Button>
             <Button
               styleType={'primarySolid'}
-              onClick={() => router.push('/videoCall?id=1')}
+              onClick={() =>
+                router.push(`/videoCall?id=1&therapySendbirdId=${therapySendbirdId}`)
+              }
             >
               시작하기
             </Button>

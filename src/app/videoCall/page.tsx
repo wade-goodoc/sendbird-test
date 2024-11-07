@@ -20,18 +20,89 @@ import { useTherapySessionQuery } from '@/src/gql/generated/graphql';
 import FemaleIcon from '@/src/assets/icons/ic_gender_female.svg';
 import Button from '@/src/components/forms/Button';
 import Modal from '@/src/components/overlays/Modal';
-import useSendbird from '@/src/hooks/sendbird/useSendbird';
+import { useEffect } from 'react';
+import SendBirdCall from 'sendbird-calls';
+import { useRecoilValue } from 'recoil';
+import { therapistInfo } from '@/src/store/auth';
+// import useSendbird from '@/src/hooks/sendbird/useSendbird';
 
 const VideoCallPage = () => {
   const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+  const therapySendbirdId = searchParams.get('therapySendbirdId');
+  const { sendbirdUserId } = useRecoilValue(therapistInfo);
 
   const { data } = useTherapySessionQuery({
     variables: {
-      therapySessionId: searchParams.get('id') || ''
+      therapySessionId: id || ''
     }
   });
 
-  useSendbird();
+  // useSendbird();
+
+  console.log('therapySendbirdId : ', therapySendbirdId);
+
+  const authenticateUser = async () => {
+    console.log('sendbird : ', sendbirdUserId);
+    await SendBirdCall.authenticate({ userId: sendbirdUserId }, (result, error) => {
+      if (error) console.log('authentication error', error);
+      if (result) console.log('authentication success', result);
+    });
+
+    await SendBirdCall.connectWebSocket()
+      .then(() => {
+        console.log('socket connected');
+        enterRoom();
+      })
+      .catch(() => console.log('socket failed'));
+  };
+
+  const enterRoom = async () => {
+    SendBirdCall.fetchRoomById('23328a6c-4f9b-43c4-83d1-9790b4e959d7')
+      .then(async (room) => {
+        console.log('get room : ', room);
+        // `room` with the identifier `ROOM_ID` is fetched from the Sendbird Server.
+        const enterParams = {
+          videoEnabled: true,
+          audioEnabled: true
+        };
+
+        await room
+          .enter(enterParams)
+          .then(() => {
+            console.log('enter room success');
+          })
+          .catch((e) => {
+            console.log('enter room failed');
+          });
+
+        const localMediaView = document.getElementById('local_video_element');
+        // Set local media view.
+
+        if (localMediaView) {
+          room.localParticipant.setMediaView(localMediaView as HTMLMediaElement);
+          // Called when a remote participant is connected to the media stream and starts sending the media stream.
+          room.on('remoteParticipantStreamStarted', (remoteParticipant) => {
+            // Create a new HTMLMediaElement to set remote participant's media stream.
+            // const remoteMediaView = document.createElement('video');
+            const remoteMediaView = document.getElementById('remote_video_element');
+            // It is recommended to set a media view element's autoplay property to true.
+            if (remoteMediaView) {
+              remoteParticipant.setMediaView(remoteMediaView as HTMLMediaElement);
+            }
+          });
+        }
+      })
+      .catch((e) => {
+        // Handle error
+      });
+  };
+
+  useEffect(() => {
+    SendBirdCall.init('0D5C3247-59D7-4F13-8A4F-446EC0BA4087');
+
+    authenticateUser();
+  }, []);
 
   return (
     <div className={style.container}>

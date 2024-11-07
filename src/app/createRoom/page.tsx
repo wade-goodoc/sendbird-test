@@ -99,11 +99,18 @@ const CreateRoom = () => {
         입장하기
       </Button>
 
-      <video
-        id="local_video_element_id"
-        autoPlay
-        style={{ width: 200, height: 400, backgroundColor: '#eee' }}
-      ></video>
+      <div style={{ width: 200, height: 400 }}>
+        <video
+          id="local_video_element_id"
+          autoPlay
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            backgroundColor: '#eee'
+          }}
+        ></video>
+      </div>
     </div>
   );
 };
