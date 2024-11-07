@@ -1,0 +1,18 @@
+version: 0.2
+env:
+  parameter-store:
+    AWS_ACCESS_KEY_ID: '/staging/codebuild/eks/cluster/accesskey'
+    AWS_SECRET_ACCESS_KEY: '/staging/codebuild/eks/cluster/secretkey'
+  variables:
+    AWS_S3_BUCKET_NAME: 'therapist.goodoc-staging.co.kr'
+    AWS_DEFAULT_REGION: 'ap-northeast-2'
+    AWS_CDN_DISTRIBUTION_ID: 'E3MFJ0QP9AMLUG'
+
+phases:
+  build:
+    commands:
+      - yarn install
+      - cp ci/staging/.env .env.local
+      - yarn build
+      - aws s3 sync ./out s3://$AWS_S3_BUCKET_NAME --acl public-read --delete
+      - aws cloudfront create-invalidation --distribution-id $AWS_CDN_DISTRIBUTION_ID --paths "/*"

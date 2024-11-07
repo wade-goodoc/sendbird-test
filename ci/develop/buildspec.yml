@@ -1,0 +1,18 @@
+version: 0.2
+env:
+  parameter-store:
+    AWS_ACCESS_KEY_ID: '/develop/codebuild/eks/cluster/accesskey'
+    AWS_SECRET_ACCESS_KEY: '/develop/codebuild/eks/cluster/secretkey'
+  variables:
+    AWS_S3_BUCKET_NAME: 'therapist.goodoc-develop.co.kr'
+    AWS_DEFAULT_REGION: 'ap-northeast-2'
+    AWS_CDN_DISTRIBUTION_ID: 'E3GLJT2QCU486C'
+
+phases:
+  build:
+    commands:
+      - yarn install
+      - cp ci/develop/.env .env.local
+      - yarn build
+      - aws s3 sync ./out s3://$AWS_S3_BUCKET_NAME --acl public-read --delete
+      - aws cloudfront create-invalidation --distribution-id $AWS_CDN_DISTRIBUTION_ID --paths "/*"

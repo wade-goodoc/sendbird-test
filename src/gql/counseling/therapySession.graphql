@@ -1,0 +1,22 @@
+query TherapySession($therapySessionId: String!) {
+  therapySession(therapySessionId: $therapySessionId) {
+    id
+    createdAt
+    product {
+      method
+    }
+    specialty
+    productId
+    style
+    topic
+    therapyUser {
+      nickname
+      sendbirdUserId
+      therapySessions {
+        id
+      }
+    }
+    noteToUser
+    noteFromUser
+  }
+}

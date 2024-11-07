@@ -1,0 +1,19 @@
+export const AllowKeysForNumberInput = [
+  '0',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  'Backspace',
+  'ArrowLeft',
+  'ArrowRight',
+  'Delete',
+  'Home',
+  'End',
+  'Tab'
+];

@@ -1,0 +1,15 @@
+query TherapySessions($input: TherapistTherapySessionsQueryInput!) {
+  therapySessions(input: $input) {
+    data {
+      id
+      therapyUser {
+        nickname
+        sendbirdUserId
+      }
+      product {
+        method
+      }
+    }
+    totalCount
+  }
+}

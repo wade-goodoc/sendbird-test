@@ -1,0 +1,122 @@
+def MERGE_RESULT=true
+def NOTIFICATION_GROUPS="@frontend"
+
+def buildspec() {
+  if (env.BRANCH_NAME == "develop")
+    "ci/develop/buildspec.yml"
+  else if (env.BRANCH_NAME == "staging")
+    "ci/staging/buildspec.yml"
+  else if (env.BRANCH_NAME == "production")
+    "ci/production/buildspec.yml"
+  else
+    ""
+}
+
+def channel() {
+  if (env.BRANCH_NAME.contains("production"))
+    "#product_deployment"
+  else
+    "#product_development"
+}
+
+pipeline {
+  agent none
+
+  stages {
+    stage('Notify starting job') {
+      agent {
+        label 'linux'
+      }
+      steps {
+        slackSend(
+          channel: channel(),
+          color: "#EEEEEE",
+          message: "[Starting] ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.RUN_DISPLAY_URL}|Open>)"
+        )
+      }
+    }
+
+    stage('Build') {
+      agent {
+        label 'linux'
+      }
+      steps {
+        awsCodeBuild(
+          credentialsType: 'keys',
+          projectName: 'builder-base-al-standard5-node20',
+          region: 'ap-northeast-2',
+          sourceControlType: 'jenkins',
+          sseAlgorithm: 'AES256',
+          buildSpecFile: "ci/${env.BRANCH_NAME}/buildspec.yml"
+        )
+      }
+    }
+
+    stage('Git backward Merge And Push'){
+      when {
+        expression {
+          return env.BRANCH_NAME != 'base';
+        }
+      }
+      agent {
+        label 'node-linux'
+      }
+      steps{
+        sshagent(credentials: ['gooodoc_ssh_key']) {
+          script{
+            if (env.BRANCH_NAME == 'staging') {
+              sh "git checkout develop"
+              try {
+                sh "git pull origin develop"
+                sh "git merge origin/staging"
+                sh 'git push origin develop'
+              } catch (e) {
+                MERGE_RESULT = false
+                echo "git Backward Merge To Develop FAIL!!"
+              }
+            } else if(env.BRANCH_NAME =='production'){
+              sh "git checkout staging"
+              try {
+                  sh "git pull"
+                  sh "git merge origin/production"
+                  sh 'git push origin staging'
+              } catch (e) {
+                  MERGE_RESULT = false;
+                  echo "git Backward Merge To Staging FAIL!!"
+              }
+            } else {
+              echo "this branch is develop, so we don't have to need backward merge"
+            }
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      script{
+        if(MERGE_RESULT){
+          slackSend(
+            channel: channel(), 
+            color: "good", 
+            message: "[Successful] ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.RUN_DISPLAY_URL}|Open>)"
+          )
+        }else{
+          slackSend(
+            channel: channel(), 
+            color: "good", 
+            message: "[Partial Success, Fail Back Merge(Conflict)] ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.RUN_DISPLAY_URL}|Open>)"
+          )
+        }
+      }
+    }
+    failure {
+      slackSend(
+        channel: channel(),
+        color: "danger",
+        message: "[Failed] ${env.JOB_NAME} #${env.BUILD_NUMBER} ${NOTIFICATION_GROUPS} (<${env.RUN_DISPLAY_URL}|Open>)"
+      )
+    }
+  }
+}

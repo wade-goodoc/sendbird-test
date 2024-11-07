@@ -1,0 +1,8 @@
+mutation LoginTherapist($input: LoginTherapistInput!) {
+  loginTherapist(input: $input) {
+    accessToken
+    refreshToken
+    refreshTokenExpiredAt
+    token
+  }
+}

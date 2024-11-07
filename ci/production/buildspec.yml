@@ -1,0 +1,15 @@
+version: 0.2
+env:
+  variables:
+    AWS_S3_BUCKET_NAME: 'therapist.goodoc.co.kr'
+    AWS_DEFAULT_REGION: 'ap-northeast-2'
+    AWS_CDN_DISTRIBUTION_ID: 'ETI6WRS980J1E'
+
+phases:
+  build:
+    commands:
+      - yarn install
+      - cp ci/production/.env .env.local
+      - yarn build
+      - aws s3 sync ./out s3://$AWS_S3_BUCKET_NAME --acl public-read --delete
+      - aws cloudfront create-invalidation --distribution-id $AWS_CDN_DISTRIBUTION_ID --paths "/*"
