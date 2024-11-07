@@ -101,6 +101,7 @@ const CreateRoom = () => {
 
       <video
         id="local_video_element_id"
+        autoPlay
         style={{ width: 200, height: 400, backgroundColor: '#eee' }}
       ></video>
     </div>
