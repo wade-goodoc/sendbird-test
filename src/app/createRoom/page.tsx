@@ -1,15 +1,17 @@
 'use client';
 import Input from '@/src/components/forms/Input';
 import * as style from './index.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import SendBirdCall from 'sendbird-calls';
 import Button from '@/src/components/forms/Button';
 
 // 화사상담 room 생성을 위한 테스트 페이지.
 const CreateRoom = () => {
-  const authOption = { userId: 'jackson.hong' };
+  const [user, setUser] = useState('jackson.hong');
+  const authOption = { userId: user };
 
   const authenticateUser = async () => {
+    console.log('인증 및 소켓연결 : ', user);
     await SendBirdCall.authenticate(authOption, (result, error) => {
       if (error) console.log('authentication error', error);
       if (result) console.log('authentication success', result);
@@ -77,12 +79,19 @@ const CreateRoom = () => {
   useEffect(() => {
     SendBirdCall.init('0D5C3247-59D7-4F13-8A4F-446EC0BA4087');
 
-    authenticateUser();
+    // authenticateUser();
   }, []);
 
   return (
     <div className={style.container}>
-      <Input placeholder={'userId'} value={'jackson.hong'} />
+      <Input
+        placeholder={'userId'}
+        value={user}
+        onChange={(e) => setUser(e.target.value)}
+      />
+      <Button styleType={'secondarySmooth'} onClick={authenticateUser}>
+        인증 및 소켓연결
+      </Button>
       <Button styleType={'primarySolid'} onClick={createRoom}>
         방만들기
       </Button>
