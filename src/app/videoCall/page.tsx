@@ -41,10 +41,10 @@ const VideoCallPage = () => {
 
   const authenticateUser = async () => {
     console.log('sendbird : ', sendbirdUserId);
-    // await SendBirdCall.authenticate({ userId: sendbirdUserId }, (result, error) => {
-    //   if (error) console.log('authentication error', error);
-    //   if (result) console.log('authentication success', result);
-    // });
+    await SendBirdCall.authenticate({ userId: sendbirdUserId }, (result, error) => {
+      if (error) console.log('authentication error', error);
+      if (result) console.log('authentication success', result);
+    });
 
     await SendBirdCall.connectWebSocket()
       .then(() => {
