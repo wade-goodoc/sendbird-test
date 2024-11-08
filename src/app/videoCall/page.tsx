@@ -41,10 +41,10 @@ const VideoCallPage = () => {
 
   const authenticateUser = async () => {
     console.log('sendbird : ', sendbirdUserId);
-    await SendBirdCall.authenticate({ userId: sendbirdUserId }, (result, error) => {
-      if (error) console.log('authentication error', error);
-      if (result) console.log('authentication success', result);
-    });
+    // await SendBirdCall.authenticate({ userId: sendbirdUserId }, (result, error) => {
+    //   if (error) console.log('authentication error', error);
+    //   if (result) console.log('authentication success', result);
+    // });
 
     await SendBirdCall.connectWebSocket()
       .then(() => {
@@ -58,7 +58,6 @@ const VideoCallPage = () => {
     SendBirdCall.fetchRoomById('23328a6c-4f9b-43c4-83d1-9790b4e959d7')
       .then(async (room) => {
         console.log('get room : ', room);
-        // `room` with the identifier `ROOM_ID` is fetched from the Sendbird Server.
         const enterParams = {
           videoEnabled: true,
           audioEnabled: true
@@ -74,16 +73,11 @@ const VideoCallPage = () => {
           });
 
         const localMediaView = document.getElementById('local_video_element');
-        // Set local media view.
 
         if (localMediaView) {
           room.localParticipant.setMediaView(localMediaView as HTMLMediaElement);
-          // Called when a remote participant is connected to the media stream and starts sending the media stream.
           room.on('remoteParticipantStreamStarted', (remoteParticipant) => {
-            // Create a new HTMLMediaElement to set remote participant's media stream.
-            // const remoteMediaView = document.createElement('video');
             const remoteMediaView = document.getElementById('remote_video_element');
-            // It is recommended to set a media view element's autoplay property to true.
             if (remoteMediaView) {
               remoteParticipant.setMediaView(remoteMediaView as HTMLMediaElement);
             }
