@@ -29,7 +29,6 @@ import { therapistInfo } from '@/src/store/auth';
 const VideoCallPage = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-  const therapySendbirdId = searchParams.get('therapySendbirdId');
   const { sendbirdUserId } = useRecoilValue(therapistInfo);
 
   const { data } = useTherapySessionQuery({
@@ -39,8 +38,6 @@ const VideoCallPage = () => {
   });
 
   // useSendbird();
-
-  console.log('therapySendbirdId : ', therapySendbirdId);
 
   const authenticateUser = async () => {
     console.log('sendbird : ', sendbirdUserId);

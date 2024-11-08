@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import SendBirdCall from 'sendbird-calls';
 import Button from '@/src/components/forms/Button';
 
-// 화사상담 room 생성을 위한 테스트 페이지.
-const CreateRoom = () => {
+// 화사상담 접속 용 테스트 페이지.
+const TestVideoCall = () => {
   const [user, setUser] = useState('jackson.hong');
   const authOption = { userId: user };
 
@@ -29,10 +29,10 @@ const CreateRoom = () => {
 
     SendBirdCall.createRoom(roomParams)
       .then((room) => {
-        console.log('createRoom', room);
+        console.log('testVideoCall', room);
       })
       .catch((e) => {
-        console.log('createRoom error', e);
+        console.log('testVideoCall error', e);
       });
   };
 
@@ -63,11 +63,10 @@ const CreateRoom = () => {
           // Called when a remote participant is connected to the media stream and starts sending the media stream.
           room.on('remoteParticipantStreamStarted', (remoteParticipant) => {
             // Create a new HTMLMediaElement to set remote participant's media stream.
-            const remoteMediaView = document.createElement('video');
+            const remoteMediaView = document.getElementById('local_video_element_id');
+
             // It is recommended to set a media view element's autoplay property to true.
-            remoteMediaView.autoplay = true;
-            remoteParticipant.setMediaView(remoteMediaView);
-            document.body.appendChild(remoteMediaView);
+            remoteParticipant.setMediaView(remoteMediaView as HTMLMediaElement);
           });
         }
       })
@@ -84,35 +83,66 @@ const CreateRoom = () => {
 
   return (
     <div className={style.container}>
-      <Input
-        placeholder={'userId'}
-        value={user}
-        onChange={(e) => setUser(e.target.value)}
-      />
-      <Button styleType={'secondarySmooth'} onClick={authenticateUser}>
-        인증 및 소켓연결
-      </Button>
-      <Button styleType={'primarySolid'} onClick={createRoom}>
-        방만들기
-      </Button>
-      <Button styleType={'secondarySolid'} onClick={enterRoom}>
-        입장하기
-      </Button>
+      <div className={style.content}>
+        <div style={{ marginBottom: 10 }}>
+          <Input
+            placeholder={'userId'}
+            value={user}
+            onChange={(e) => setUser(e.target.value)}
+          />
+        </div>
+        <Button
+          styleType={'secondarySmooth'}
+          fullWidth
+          onClick={createRoom}
+          style={{ marginBottom: 10 }}
+        >
+          방만들기
+        </Button>
+        <div className={style.buttons}>
+          <Button
+            className={style.button}
+            styleType={'primaryOutline'}
+            fullWidth
+            onClick={authenticateUser}
+          >
+            인증 및 소켓연결
+          </Button>
+          <Button className={style.button} styleType={'primarySolid'} onClick={enterRoom}>
+            입장하기
+          </Button>
+        </div>
 
-      <div style={{ width: 200, height: 400 }}>
-        <video
-          id="local_video_element_id"
-          autoPlay
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            backgroundColor: '#eee'
-          }}
-        ></video>
+        <div className={style.videoView}>
+          <div style={{ width: 200, height: 360 }}>
+            <video
+              id="local_video_element_id"
+              autoPlay
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                backgroundColor: '#999'
+              }}
+            ></video>
+          </div>
+
+          <div style={{ width: 200, height: 360 }}>
+            <video
+              id="remote_video_element_id"
+              autoPlay
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                backgroundColor: '#999'
+              }}
+            ></video>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default CreateRoom;
+export default TestVideoCall;

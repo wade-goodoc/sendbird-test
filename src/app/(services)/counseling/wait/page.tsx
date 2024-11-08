@@ -112,14 +112,11 @@ const CounselingWaitPage = () => {
                     </Text>
                   </TableCell>
                 </TableRow>
-                {item.therapyUser.sendbirdUserId && (
+                {index === 1 && (
                   <TableRow>
                     <td colSpan={5} width={960}>
                       <div className={style.subTableRow}>
-                        <CounselingStartControl
-                          size={'small'}
-                          therapySendbirdId={item.therapyUser.sendbirdUserId}
-                        />
+                        <CounselingStartControl size={'small'} />
                       </div>
                     </td>
                   </TableRow>
