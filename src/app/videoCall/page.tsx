@@ -24,12 +24,15 @@ import { useEffect } from 'react';
 import SendBirdCall from 'sendbird-calls';
 import { useRecoilValue } from 'recoil';
 import { therapistInfo } from '@/src/store/auth';
+import { useSbCalls } from '@/src/libs/sendbird-calls';
 // import useSendbird from '@/src/hooks/sendbird/useSendbird';
 
 const VideoCallPage = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const { sendbirdUserId } = useRecoilValue(therapistInfo);
+
+  const sbCalls = useSbCalls();
 
   const { data } = useTherapySessionQuery({
     variables: {
@@ -57,38 +60,33 @@ const VideoCallPage = () => {
   const enterRoom = async () => {
     console.log('click enter room');
 
-    SendBirdCall.fetchRoomById('23328a6c-4f9b-43c4-83d1-9790b4e959d7')
-      .then(async (room) => {
-        console.log('get room : ', room);
-        const enterParams = {
-          videoEnabled: true,
-          audioEnabled: true
-        };
+    const room = await sbCalls.fetchRoomById('23328a6c-4f9b-43c4-83d1-9790b4e959d7');
 
-        await room
-          .enter(enterParams)
-          .then(() => {
-            console.log('enter room success');
-          })
-          .catch((e) => {
-            console.log('enter room failed');
-          });
+    const enterParams = {
+      videoEnabled: true,
+      audioEnabled: true
+    };
 
-        const localMediaView = document.getElementById('local_video_element');
-
-        if (localMediaView) {
-          room.localParticipant.setMediaView(localMediaView as HTMLMediaElement);
-          room.on('remoteParticipantStreamStarted', (remoteParticipant) => {
-            const remoteMediaView = document.getElementById('remote_video_element');
-            if (remoteMediaView) {
-              remoteParticipant.setMediaView(remoteMediaView as HTMLMediaElement);
-            }
-          });
-        }
+    await room
+      .enter(enterParams)
+      .then(() => {
+        console.log('enter room success');
       })
       .catch((e) => {
-        // Handle error
+        console.log('enter room failed');
       });
+
+    const localMediaView = document.getElementById('local_video_element');
+
+    if (localMediaView) {
+      room.localParticipant.setMediaView(localMediaView as HTMLMediaElement);
+      // room.on('remoteParticipantStreamStarted', (remoteParticipant) => {
+      //   const remoteMediaView = document.getElementById('remote_video_element');
+      //   if (remoteMediaView) {
+      //     remoteParticipant.setMediaView(remoteMediaView as HTMLMediaElement);
+      //   }
+      // });
+    }
   };
 
   // useEffect(() => {

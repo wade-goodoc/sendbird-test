@@ -102,8 +102,17 @@ export const statefyRoom = (
     ...statefulRemoteParticipants
   ];
 
+  const remoteParticipantStreamStarted = (participant: RemoteParticipant) => {
+    upsertRemoteParticipant(participant);
+
+    const remoteMediaView = document.getElementById('remote_video_element');
+    if (remoteMediaView) {
+      participant.setMediaView(remoteMediaView as HTMLMediaElement);
+    }
+  };
+
   room.on('remoteParticipantEntered', upsertRemoteParticipant);
-  room.on('remoteParticipantStreamStarted', upsertRemoteParticipant);
+  room.on('remoteParticipantStreamStarted', remoteParticipantStreamStarted);
   room.on('remoteParticipantExited', deleteRemoteParticipant);
   room.on('remoteAudioSettingsChanged', upsertRemoteParticipant);
   room.on('remoteVideoSettingsChanged', upsertRemoteParticipant);
