@@ -32,42 +32,19 @@ const SbCallsProvider = ({ children }: { children: ReactElement }): JSX.Element 
   // const isBusy = useMemo(() => calls.some((call) => !call.isEnded), [calls]);
 
   const init = async (appId: string) => {
-    console.log('0 : ', appId);
-    await SendbirdCall.init(appId);
-    console.log('1');
-    await SendBirdCall.authenticate({ userId: 'jackson.hong' }, (result, error) => {
+    SendbirdCall.init(appId);
+
+    await SendBirdCall.authenticate({ userId: sendbirdUserId }, (result, error) => {
       if (error) console.log('authentication error', error);
       if (result) console.log('authentication success', result);
     });
-    console.log('2');
     await SendBirdCall.connectWebSocket()
-      .then(() => {
-        console.log('socket connected');
-        // enterRoom();
-      })
-      .catch(() => console.log('socket failed'));
-    console.log('3');
-  };
-
-  const authenticateUser = async () => {
-    await SendBirdCall.authenticate({ userId: 'jackson.hong' }, (result, error) => {
-      if (error) console.log('authentication error', error);
-      if (result) console.log('authentication success', result);
-    });
-
-    await SendBirdCall.connectWebSocket()
-      .then(() => {
-        console.log('socket connected');
-        // enterRoom();
-      })
+      .then(() => console.log('socket connected'))
       .catch(() => console.log('socket failed'));
   };
 
   useEffect(() => {
     init(process.env.NEXT_PUBLIC_SENDBIRD_APPID || '');
-    // SendBirdCall.init('0D5C3247-59D7-4F13-8A4F-446EC0BA4087');
-    //
-    // authenticateUser();
   }, []);
 
   const ringingListenerId = 'sb-call-listener';
