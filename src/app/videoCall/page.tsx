@@ -89,11 +89,11 @@ const VideoCallPage = () => {
       });
   };
 
-  useEffect(() => {
-    SendBirdCall.init('0D5C3247-59D7-4F13-8A4F-446EC0BA4087');
-
-    authenticateUser();
-  }, []);
+  // useEffect(() => {
+  //   SendBirdCall.init('0D5C3247-59D7-4F13-8A4F-446EC0BA4087');
+  //
+  //   authenticateUser();
+  // }, []);
 
   return (
     <div className={style.container}>
@@ -275,6 +275,9 @@ const VideoCallPage = () => {
                 상담종료
               </Text>
             </button>
+            <Button styleType={'primarySolid'} onClick={() => enterRoom()}>
+              입장하기
+            </Button>
           </div>
         </div>
       </div>

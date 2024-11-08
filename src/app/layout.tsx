@@ -10,6 +10,7 @@ import { ApolloProvider } from '@apollo/client';
 import { Portal } from '@/src/app/portal';
 import Toast from '@/src/components/feedbacks/Toast';
 import Script from 'next/script';
+import { SbCallsProvider } from '@/src/libs/sendbird-calls';
 
 export default function RootLayout({
   children
@@ -51,10 +52,12 @@ export default function RootLayout({
       <body>
         <ApolloProvider client={graphQLClient}>
           <RecoilRoot>
+            {/*<SbCallsProvider appId={'0D5C3247-59D7-4F13-8A4F-446EC0BA4087'}>*/}
             <Portal.Provider>
               {children}
               <Toast />
             </Portal.Provider>
+            {/*</SbCallsProvider>*/}
           </RecoilRoot>
         </ApolloProvider>
       </body>
