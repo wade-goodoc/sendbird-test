@@ -13,7 +13,7 @@ export const COUNSELING_SPECIALTY = {
 
 export const COUNSELING_STYLE = {
   [TherapySessionStyleEnum.EmpathyAndComfort]: '공감과 위로',
-  [TherapySessionStyleEnum.ExpertKnowledge]: '전문적인 지식',
+  [TherapySessionStyleEnum.SpecializedAnalysis]: '전문적인 분석',
   [TherapySessionStyleEnum.PracticalAdvice]: '현실적인 조언'
 };
 
