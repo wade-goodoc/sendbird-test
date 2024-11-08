@@ -116,10 +116,10 @@ const CounselingWaitDetailPage = () => {
                 </Text>
                 <div className={style.counselingStyle}>
                   <LikeIcon />
-                  <Text type={'caption2_700'} color={'GREEN_80'}>
-                    {data?.therapySession?.style &&
-                      COUNSELING_STYLE[data.therapySession.style]}
-                  </Text>
+                  {/*<Text type={'caption2_700'} color={'GREEN_80'}>*/}
+                  {/*  {data?.therapySession?.style &&*/}
+                  {/*    COUNSELING_STYLE[data.therapySession.style]}*/}
+                  {/*</Text>*/}
                 </div>
               </div>
               <Text type={'body1_400'} color={'GRAY_80'}>
