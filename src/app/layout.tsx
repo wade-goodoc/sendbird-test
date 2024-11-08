@@ -52,12 +52,12 @@ export default function RootLayout({
       <body>
         <ApolloProvider client={graphQLClient}>
           <RecoilRoot>
-            {/*<SbCallsProvider appId={'0D5C3247-59D7-4F13-8A4F-446EC0BA4087'}>*/}
-            <Portal.Provider>
-              {children}
-              <Toast />
-            </Portal.Provider>
-            {/*</SbCallsProvider>*/}
+            <SbCallsProvider>
+              <Portal.Provider>
+                {children}
+                <Toast />
+              </Portal.Provider>
+            </SbCallsProvider>
           </RecoilRoot>
         </ApolloProvider>
       </body>
