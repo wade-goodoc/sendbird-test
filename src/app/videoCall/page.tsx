@@ -55,6 +55,8 @@ const VideoCallPage = () => {
   };
 
   const enterRoom = async () => {
+    console.log('click enter room');
+
     SendBirdCall.fetchRoomById('23328a6c-4f9b-43c4-83d1-9790b4e959d7')
       .then(async (room) => {
         console.log('get room : ', room);
