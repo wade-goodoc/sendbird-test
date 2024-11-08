@@ -32,19 +32,21 @@ const SbCallsProvider = ({ children }: { children: ReactElement }): JSX.Element 
   // const isBusy = useMemo(() => calls.some((call) => !call.isEnded), [calls]);
 
   const init = async (appId: string) => {
+    console.log('0 : ', appId);
     await SendbirdCall.init(appId);
     console.log('1');
     await SendBirdCall.authenticate({ userId: 'jackson.hong' }, (result, error) => {
       if (error) console.log('authentication error', error);
       if (result) console.log('authentication success', result);
     });
-
+    console.log('2');
     await SendBirdCall.connectWebSocket()
       .then(() => {
         console.log('socket connected');
         // enterRoom();
       })
       .catch(() => console.log('socket failed'));
+    console.log('3');
   };
 
   const authenticateUser = async () => {
