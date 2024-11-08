@@ -91,6 +91,7 @@ export const statefyRoom = (
     });
   };
 
+  console.log('3 : ', room.localParticipant);
   const statefulLocalParticipants = room.localParticipant
     ? [statefyLocalParticipant(room.localParticipant, updateLocalParticipant)]
     : [];
@@ -105,13 +106,21 @@ export const statefyRoom = (
   const remoteParticipantStreamStarted = (participant: RemoteParticipant) => {
     upsertRemoteParticipant(participant);
 
+    console.log('remote participant started : ', participant);
+
     const remoteMediaView = document.getElementById('remote_video_element');
     if (remoteMediaView) {
       participant.setMediaView(remoteMediaView as HTMLMediaElement);
     }
   };
 
-  room.on('remoteParticipantEntered', upsertRemoteParticipant);
+  const remoteParticipantEntered = (participant: RemoteParticipant) => {
+    upsertRemoteParticipant(participant);
+
+    alert('내담자가 입장했습니다.');
+  };
+
+  room.on('remoteParticipantEntered', remoteParticipantEntered);
   room.on('remoteParticipantStreamStarted', remoteParticipantStreamStarted);
   room.on('remoteParticipantExited', deleteRemoteParticipant);
   room.on('remoteAudioSettingsChanged', upsertRemoteParticipant);
@@ -136,7 +145,9 @@ export const statefyRoom = (
     exit() {
       room.exit();
       updateRoom();
-    }
+    },
+
+    on: room.on
   };
 };
 

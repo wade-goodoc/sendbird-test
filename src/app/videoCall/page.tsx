@@ -20,11 +20,13 @@ import { useTherapySessionQuery } from '@/src/gql/generated/graphql';
 import FemaleIcon from '@/src/assets/icons/ic_gender_female.svg';
 import Button from '@/src/components/forms/Button';
 import Modal from '@/src/components/overlays/Modal';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import SendBirdCall from 'sendbird-calls';
 import { useRecoilValue } from 'recoil';
 import { therapistInfo } from '@/src/store/auth';
 import { useSbCalls } from '@/src/libs/sendbird-calls';
+import SendbirdCall from 'sendbird-calls';
+import { sb } from '@/src/libs/sendbird';
 // import useSendbird from '@/src/hooks/sendbird/useSendbird';
 
 const VideoCallPage = () => {
@@ -33,6 +35,7 @@ const VideoCallPage = () => {
   const { sendbirdUserId } = useRecoilValue(therapistInfo);
 
   const sbCalls = useSbCalls();
+  const { rooms } = sbCalls;
 
   const { data } = useTherapySessionQuery({
     variables: {
@@ -62,6 +65,8 @@ const VideoCallPage = () => {
 
     const room = await sbCalls.fetchRoomById('23328a6c-4f9b-43c4-83d1-9790b4e959d7');
 
+    console.log('room22 : ', room, room.localParticipant);
+
     const enterParams = {
       videoEnabled: true,
       audioEnabled: true
@@ -76,24 +81,34 @@ const VideoCallPage = () => {
         console.log('enter room failed');
       });
 
-    const localMediaView = document.getElementById('local_video_element');
+    console.log('entered room : ', room);
 
-    if (localMediaView) {
-      room.localParticipant.setMediaView(localMediaView as HTMLMediaElement);
-      // room.on('remoteParticipantStreamStarted', (remoteParticipant) => {
-      //   const remoteMediaView = document.getElementById('remote_video_element');
-      //   if (remoteMediaView) {
-      //     remoteParticipant.setMediaView(remoteMediaView as HTMLMediaElement);
-      //   }
-      // });
-    }
+    // const localMediaView = document.getElementById('local_video_element');
+    //
+    // if (localMediaView) {
+    //   await room.localParticipant.setMediaView(localMediaView as HTMLMediaElement);
+    //   room.on('remoteParticipantStreamStarted', (remoteParticipant) => {
+    //     const remoteMediaView = document.getElementById('remote_video_element');
+    //     if (remoteMediaView) {
+    //       remoteParticipant.setMediaView(remoteMediaView as HTMLMediaElement);
+    //     }
+    //   });
+    // }
   };
+
+  useEffect(() => {
+    console.log('rooms: ', sbCalls.rooms);
+  }, [sbCalls]);
 
   // useEffect(() => {
   //   SendBirdCall.init('0D5C3247-59D7-4F13-8A4F-446EC0BA4087');
   //
   //   authenticateUser();
   // }, []);
+
+  const onCall = useMemo(() => {
+    return rooms.find((r) => !!r.localParticipant);
+  }, [rooms]);
 
   return (
     <div className={style.container}>
@@ -132,22 +147,35 @@ const VideoCallPage = () => {
                 </Text>
               </div>
             </div>
-            <video
-              id="remote_video_element"
-              autoPlay
-              playsInline
-              className={style.remoteVideoStyle}
-            ></video>
 
-            <div className={style.therapistVideoScreen}>
-              <video
-                id="local_video_element"
-                autoPlay
-                playsInline
-                muted
-                className={style.localVideoStyle}
-              ></video>
-            </div>
+            {onCall && (
+              <>
+                <video
+                  id="remote_video_element"
+                  autoPlay
+                  playsInline
+                  className={style.remoteVideoStyle}
+                  ref={(el) => {
+                    if (!el) return;
+                    onCall?.remoteParticipants[0].setMediaView(el);
+                  }}
+                ></video>
+
+                <div className={style.therapistVideoScreen}>
+                  <video
+                    id="local_video_element"
+                    autoPlay
+                    playsInline
+                    muted
+                    className={style.localVideoStyle}
+                    ref={(el) => {
+                      if (!el) return;
+                      onCall?.localParticipant.setMediaView(el);
+                    }}
+                  ></video>
+                </div>
+              </>
+            )}
           </div>
           <div className={style.therapyInfo}>
             <div className={style.therapyInfoTop}>
@@ -227,10 +255,10 @@ const VideoCallPage = () => {
                       </Text>
                       <div className={style.counselingStyle}>
                         <LikeIcon />
-                        <Text type={'caption2_700'} color={'GREEN_80'}>
-                          {data?.therapySession?.style &&
-                            COUNSELING_STYLE[data.therapySession.style]}
-                        </Text>
+                        {/*<Text type={'caption2_700'} color={'GREEN_80'}>*/}
+                        {/*  {data?.therapySession?.style &&*/}
+                        {/*    COUNSELING_STYLE[data.therapySession.style]}*/}
+                        {/*</Text>*/}
                       </div>
                     </div>
                     <Text type={'body1_400'} color={'GRAY_80'}>
@@ -269,7 +297,11 @@ const VideoCallPage = () => {
             <button className={style.bottomIconButton} type={'button'}>
               <VideoIcon />
             </button>
-            <button className={style.callEndButton} type={'button'}>
+            <button
+              className={style.callEndButton}
+              type={'button'}
+              // onClick={() => groupCallRoom.exit()}
+            >
               <CallEndIcon />
               <Text type={'body2_700'} color={'WHITE'}>
                 상담종료

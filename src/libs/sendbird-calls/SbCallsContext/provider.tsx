@@ -151,7 +151,9 @@ const SbCallsProvider = ({ children }: { children: ReactElement }): JSX.Element 
   const fetchRoomById = useCallback<ContextType['fetchRoomById']>(
     async (roomId) => {
       const room = await SendbirdCall.fetchRoomById(roomId);
+      console.log('1 : ', room);
       const statefulRoom = statefyRoom(room, dispatch);
+      console.log('2 : ', statefulRoom);
       if (state.rooms.find((x) => x.roomId === room.roomId)) {
         dispatch({ type: 'UPDATE_ROOM', payload: statefulRoom });
       } else {
@@ -161,6 +163,7 @@ const SbCallsProvider = ({ children }: { children: ReactElement }): JSX.Element 
     },
     [state.rooms]
   );
+
   const callContext: ContextType = {
     ...initialContext,
     ...state,

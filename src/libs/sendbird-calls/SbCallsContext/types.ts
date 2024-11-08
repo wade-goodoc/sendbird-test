@@ -78,7 +78,7 @@ export interface StatefulDirectCall
 export interface StatefulRoom
   extends Pick<
     Room,
-    'roomId' | 'roomType' | 'createdAt' | 'createdBy' | 'enter' | 'exit'
+    'roomId' | 'roomType' | 'createdAt' | 'createdBy' | 'enter' | 'exit' | 'on'
   > {
   participants: StatefulParticipant[];
   localParticipant: StatefulLocalParticipant;
