@@ -63,7 +63,7 @@ const TestVideoCall = () => {
           // Called when a remote participant is connected to the media stream and starts sending the media stream.
           room.on('remoteParticipantStreamStarted', (remoteParticipant) => {
             // Create a new HTMLMediaElement to set remote participant's media stream.
-            const remoteMediaView = document.getElementById('local_video_element_id');
+            const remoteMediaView = document.getElementById('remote_video_element_id');
 
             // It is recommended to set a media view element's autoplay property to true.
             remoteParticipant.setMediaView(remoteMediaView as HTMLMediaElement);
