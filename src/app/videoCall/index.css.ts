@@ -202,5 +202,9 @@ export const textarea = style({
 });
 
 export const modalInner = style({
-  padding: 24
+  padding: '24px 24px 0'
+});
+
+export const modalTitle = style({
+  marginBottom: 8
 });

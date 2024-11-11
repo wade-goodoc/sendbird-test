@@ -5,6 +5,7 @@ import type {
   RemoteParticipant,
   Room
 } from 'sendbird-calls';
+import { ToastProps } from '@/src/components/feedbacks/Toast';
 
 export type CallState =
   | 'dialing'

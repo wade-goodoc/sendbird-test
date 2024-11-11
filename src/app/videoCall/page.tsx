@@ -15,7 +15,7 @@ import {
 } from '@/src/constants/counseling';
 import LikeIcon from '@/src/assets/icons/ic_like_green.svg';
 import Textarea from '@/src/components/forms/Textarea';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTherapySessionQuery } from '@/src/gql/generated/graphql';
 import FemaleIcon from '@/src/assets/icons/ic_gender_female.svg';
 import Button from '@/src/components/forms/Button';
@@ -32,10 +32,11 @@ import { sb } from '@/src/libs/sendbird';
 const VideoCallPage = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-  const { sendbirdUserId } = useRecoilValue(therapistInfo);
+  // const { sendbirdUserId } = useRecoilValue(therapistInfo);
 
   const sbCalls = useSbCalls();
-  const { rooms } = sbCalls;
+  const { user, rooms } = sbCalls;
+  const router = useRouter();
 
   const { data } = useTherapySessionQuery({
     variables: {
@@ -43,26 +44,7 @@ const VideoCallPage = () => {
     }
   });
 
-  // useSendbird();
-
-  const authenticateUser = async () => {
-    console.log('sendbird : ', sendbirdUserId);
-    await SendBirdCall.authenticate({ userId: sendbirdUserId }, (result, error) => {
-      if (error) console.log('authentication error', error);
-      if (result) console.log('authentication success', result);
-    });
-
-    await SendBirdCall.connectWebSocket()
-      .then(() => {
-        console.log('socket connected');
-        enterRoom();
-      })
-      .catch(() => console.log('socket failed'));
-  };
-
   const enterRoom = async () => {
-    console.log('click enter room');
-
     const room = await sbCalls.fetchRoomById('23328a6c-4f9b-43c4-83d1-9790b4e959d7');
 
     console.log('room22 : ', room, room.localParticipant);
@@ -81,8 +63,6 @@ const VideoCallPage = () => {
         console.log('enter room failed');
       });
 
-    console.log('entered room : ', room);
-
     // const localMediaView = document.getElementById('local_video_element');
     //
     // if (localMediaView) {
@@ -96,9 +76,22 @@ const VideoCallPage = () => {
     // }
   };
 
-  useEffect(() => {
-    console.log('rooms: ', sbCalls.rooms);
-  }, [sbCalls]);
+  // useSendbird();
+
+  // const authenticateUser = async () => {
+  //   console.log('sendbird : ', sendbirdUserId);
+  //   await SendBirdCall.authenticate({ userId: sendbirdUserId }, (result, error) => {
+  //     if (error) console.log('authentication error', error);
+  //     if (result) console.log('authentication success', result);
+  //   });
+  //
+  //   await SendBirdCall.connectWebSocket()
+  //     .then(() => {
+  //       console.log('socket connected');
+  //       enterRoom();
+  //     })
+  //     .catch(() => console.log('socket failed'));
+  // };
 
   // useEffect(() => {
   //   SendBirdCall.init('0D5C3247-59D7-4F13-8A4F-446EC0BA4087');
@@ -107,9 +100,14 @@ const VideoCallPage = () => {
   // }, []);
 
   const onCall = useMemo(() => {
-    console.log('change rooms');
     return rooms.find((r) => !!r.localParticipant);
   }, [rooms]);
+
+  useEffect(() => {
+    if (user) enterRoom();
+  }, [user]);
+
+  const [isEndCallModalVisible, setIsEndCallModalVisible] = useState(false);
 
   return (
     <div className={style.container}>
@@ -131,23 +129,25 @@ const VideoCallPage = () => {
 
         <div className={style.content}>
           <div className={style.videoScreen}>
-            <div className={style.currentInfo}>
-              <LoadingIcon />
-              <div className={style.currentInfoTitle}>
-                <Text type={'heading2_500'} color={'WHITE'}>
-                  내담자의 입장을
-                  <br />
-                  기다리고 있습니다.
-                </Text>
+            {!onCall?.remoteParticipants[0] && (
+              <div className={style.currentInfo}>
+                <LoadingIcon />
+                <div className={style.currentInfoTitle}>
+                  <Text type={'heading2_500'} color={'WHITE'}>
+                    내담자의 입장을
+                    <br />
+                    기다리고 있습니다.
+                  </Text>
+                </div>
+                <div>
+                  <Text type={'heading4_500'} color={'RED_50'}>
+                    내담자가 n분 이내 입장하지 않으면
+                    <br />
+                    환불 없이 상담이 자동 취소됩니다.
+                  </Text>
+                </div>
               </div>
-              <div>
-                <Text type={'heading4_500'} color={'RED_50'}>
-                  내담자가 n분 이내 입장하지 않으면
-                  <br />
-                  환불 없이 상담이 자동 취소됩니다.
-                </Text>
-              </div>
-            </div>
+            )}
 
             {/*<video*/}
             {/*  id="remote_video_element"*/}
@@ -167,33 +167,33 @@ const VideoCallPage = () => {
             {/*</div>*/}
 
             {onCall && (
-              <>
+              <video
+                id="remote_video_element"
+                autoPlay
+                playsInline
+                className={style.remoteVideoStyle}
+                ref={(el) => {
+                  if (!el) return;
+                  onCall?.remoteParticipants[0]?.setMediaView(el);
+                }}
+              ></video>
+            )}
+
+            <div className={style.therapistVideoScreen}>
+              {onCall && (
                 <video
-                  id="remote_video_element"
+                  id="local_video_element"
                   autoPlay
                   playsInline
-                  className={style.remoteVideoStyle}
+                  muted
+                  className={style.localVideoStyle}
                   ref={(el) => {
                     if (!el) return;
-                    onCall?.remoteParticipants[0]?.setMediaView(el);
+                    onCall?.localParticipant.setMediaView(el);
                   }}
                 ></video>
-
-                <div className={style.therapistVideoScreen}>
-                  <video
-                    id="local_video_element"
-                    autoPlay
-                    playsInline
-                    muted
-                    className={style.localVideoStyle}
-                    ref={(el) => {
-                      if (!el) return;
-                      onCall?.localParticipant.setMediaView(el);
-                    }}
-                  ></video>
-                </div>
-              </>
-            )}
+              )}
+            </div>
           </div>
           <div className={style.therapyInfo}>
             <div className={style.therapyInfoTop}>
@@ -318,23 +318,51 @@ const VideoCallPage = () => {
             <button
               className={style.callEndButton}
               type={'button'}
-              // onClick={() => groupCallRoom.exit()}
+              onClick={() => {
+                setIsEndCallModalVisible(true);
+              }}
             >
               <CallEndIcon />
               <Text type={'body2_700'} color={'WHITE'}>
                 상담종료
               </Text>
             </button>
-            <Button styleType={'primarySolid'} onClick={() => enterRoom()}>
-              입장하기
-            </Button>
           </div>
         </div>
       </div>
 
-      <Modal isVisible={false}>
-        <div className={style.modalInner}></div>
-      </Modal>
+      <Modal.WithButton
+        title={'상담 종료하기'}
+        isVisible={isEndCallModalVisible}
+        size={'medium'}
+        isPartialDim
+        cancelButton={
+          <Button
+            onClick={() => setIsEndCallModalVisible(false)}
+            styleType={'secondarySmooth'}
+          >
+            취소
+          </Button>
+        }
+        confirmButton={
+          <Button
+            onClick={() => {
+              onCall?.exit();
+              router.back();
+            }}
+            styleType={'primarySolid'}
+          >
+            확인
+          </Button>
+        }
+        contentChildren={
+          <div>
+            <Text type={'body1_500'} color={'GRAY_70'}>
+              상담을 종료하고 상담실에서 나갑니다.
+            </Text>
+          </div>
+        }
+      ></Modal.WithButton>
     </div>
   );
 };

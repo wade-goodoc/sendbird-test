@@ -21,8 +21,7 @@ import {
 } from './statefy';
 import { useRecoilValue } from 'recoil';
 import { therapistInfo } from '@/src/store/auth/index';
-
-// console.log({ SoundType, sdkVersion });
+import useToast from '@/src/hooks/toast/useToast';
 
 const SbCallsProvider = ({ children }: { children: ReactElement }): JSX.Element => {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -34,13 +33,18 @@ const SbCallsProvider = ({ children }: { children: ReactElement }): JSX.Element 
   const init = async (appId: string) => {
     SendbirdCall.init(appId);
 
-    await SendBirdCall.authenticate({ userId: sendbirdUserId }, (result, error) => {
-      if (error) console.log('authentication error', error);
-      if (result) console.log('authentication success', result);
-    });
+    const user = await SendBirdCall.authenticate(
+      { userId: sendbirdUserId },
+      (result, error) => {
+        if (error) console.log('authentication error', error);
+        if (result) console.log('authentication success', result);
+      }
+    );
     await SendBirdCall.connectWebSocket()
       .then(() => console.log('socket connected'))
       .catch(() => console.log('socket failed'));
+
+    if (user) dispatch({ type: 'AUTH', payload: user });
   };
 
   useEffect(() => {
@@ -133,10 +137,12 @@ const SbCallsProvider = ({ children }: { children: ReactElement }): JSX.Element 
   //   dispatch({ type: 'CLEAR_CALLS' });
   // }, []);
 
+  const { showToast } = useToast();
+
   /* Rooms */
   const createRoom = useCallback<ContextType['createRoom']>(async (options) => {
     const room = await SendbirdCall.createRoom(options);
-    const statefulRoom = statefyRoom(room, dispatch);
+    const statefulRoom = statefyRoom(room, dispatch, showToast);
     dispatch({ type: 'ADD_ROOM', payload: statefulRoom });
     return statefulRoom;
   }, []);
@@ -152,7 +158,7 @@ const SbCallsProvider = ({ children }: { children: ReactElement }): JSX.Element 
     async (roomId) => {
       const room = await SendbirdCall.fetchRoomById(roomId);
       console.log('1 : ', room);
-      const statefulRoom = statefyRoom(room, dispatch);
+      const statefulRoom = statefyRoom(room, dispatch, showToast);
       console.log('2 : ', statefulRoom);
       if (state.rooms.find((x) => x.roomId === room.roomId)) {
         dispatch({ type: 'UPDATE_ROOM', payload: statefulRoom });

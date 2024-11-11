@@ -12,6 +12,8 @@ import type {
   RemoteParticipant,
   Room
 } from 'sendbird-calls';
+import useToast from '@/src/hooks/toast/useToast';
+import { ToastProps } from '@/src/components/feedbacks/Toast';
 
 // const registerDirectCallListeners = (
 //   call: DirectCall,
@@ -48,7 +50,8 @@ import type {
 
 export const statefyRoom = (
   room: Room,
-  dispatch: React.Dispatch<Action>
+  dispatch: React.Dispatch<Action>,
+  showToast: (toastProps: ToastProps, duration?: number, onFinish?: () => void) => void
 ): StatefulRoom => {
   const dispatchUpdate = (part: Partial<StatefulRoom>) => {
     const payload = {
@@ -59,7 +62,7 @@ export const statefyRoom = (
   };
 
   const updateRoom = () => {
-    dispatchUpdate(statefyRoom(room, dispatch));
+    dispatchUpdate(statefyRoom(room, dispatch, showToast));
   };
 
   const updateLocalParticipant = (participant: Partial<StatefulLocalParticipant>) => {
@@ -117,7 +120,7 @@ export const statefyRoom = (
   const remoteParticipantEntered = (participant: RemoteParticipant) => {
     upsertRemoteParticipant(participant);
 
-    alert('내담자가 입장했습니다.');
+    showToast({ type: 'information', label: '내담자가 상담실에 입장했습니다.' });
   };
 
   room.on('remoteParticipantEntered', remoteParticipantEntered);
