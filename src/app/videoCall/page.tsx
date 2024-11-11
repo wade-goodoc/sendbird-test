@@ -7,42 +7,17 @@ import MicrophoneIcon from '@/src/assets/icons/ic_microphone.svg';
 import VideoIcon from '@/src/assets/icons/ic_video.svg';
 import CallEndIcon from '@/src/assets/icons/ic_call_end.svg';
 import LoadingIcon from '@/src/assets/icons/ic_loading.svg';
-import ArrowIcon from '@/src/assets/icons/ic_arrow_small.svg';
-import {
-  COUNSELING_SPECIALTY,
-  COUNSELING_STYLE,
-  COUNSELING_TOPIC
-} from '@/src/constants/counseling';
-import LikeIcon from '@/src/assets/icons/ic_like_green.svg';
-import Textarea from '@/src/components/forms/Textarea';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useTherapySessionQuery } from '@/src/gql/generated/graphql';
-import FemaleIcon from '@/src/assets/icons/ic_gender_female.svg';
-import Button from '@/src/components/forms/Button';
-import Modal from '@/src/components/overlays/Modal';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import SendBirdCall from 'sendbird-calls';
-import { useRecoilValue } from 'recoil';
-import { therapistInfo } from '@/src/store/auth';
 import { useSbCalls } from '@/src/libs/sendbird-calls';
-import SendbirdCall from 'sendbird-calls';
-import { sb } from '@/src/libs/sendbird';
+import EndCallModal from '@/src/app/videoCall/components/EndCallModal';
+import TherapyInfo from '@/src/app/videoCall/components/TherapyInfo';
 // import useSendbird from '@/src/hooks/sendbird/useSendbird';
 
 const VideoCallPage = () => {
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id');
-  // const { sendbirdUserId } = useRecoilValue(therapistInfo);
-
   const sbCalls = useSbCalls();
   const { user, rooms } = sbCalls;
   const router = useRouter();
-
-  const { data } = useTherapySessionQuery({
-    variables: {
-      therapySessionId: id || ''
-    }
-  });
 
   const enterRoom = async () => {
     const room = await sbCalls.fetchRoomById('23328a6c-4f9b-43c4-83d1-9790b4e959d7');
@@ -195,110 +170,8 @@ const VideoCallPage = () => {
               )}
             </div>
           </div>
-          <div className={style.therapyInfo}>
-            <div className={style.therapyInfoTop}>
-              <div className={style.therapyInfoTitleWrap}>
-                <FemaleIcon width={36} height={36} />
-                <h1 className={style.therapyInfoTitle}>
-                  <Text type={'heading3_700'} color={'GRAY_90'}>
-                    {data?.therapySession?.therapyUser.nickname}
-                  </Text>
-                  <span className={style.therapyInfoTitleDot}></span>
-                  <Text type={'heading3_700'} color={'GRAY_90'}>
-                    30대
-                  </Text>
-                </h1>
-              </div>
-              <Button styleType={'secondaryOutline'}>이전 상담 이력 3건</Button>
-            </div>
 
-            <section className={style.section}>
-              <div className={style.sectionBox}>
-                <div className={style.infoRow}>
-                  <div className={style.infoLabel}>
-                    <Text type={'body1_400'} color={'GRAY_60'}>
-                      상담상품
-                    </Text>
-                  </div>
-                  <div className={style.infoValue}>
-                    <Text type={'body1_500'} color={'GRAY_90'}>
-                      {data?.therapySession?.product.method === 'video'
-                        ? '50분 화상상담'
-                        : '50분 채팅상담'}
-                    </Text>
-                  </div>
-                </div>
-                <div className={style.infoRow}>
-                  <div className={style.infoLabel}>
-                    <Text type={'body1_400'} color={'GRAY_60'}>
-                      상담일시
-                    </Text>
-                  </div>
-                  <div className={style.infoValueAlignCenter}>
-                    <Text type={'body1_500'} color={'GRAY_90'}>
-                      2024.08.30 10:00
-                    </Text>
-                    <button className={style.rescheduleButton}>
-                      <Text type={'body2_500'} color={'GRAY_60'}>
-                        일정 변경
-                      </Text>
-                      <ArrowIcon />
-                    </button>
-                  </div>
-                </div>
-                <div className={style.infoRow}>
-                  <div className={style.infoLabel}>
-                    <Text type={'body1_400'} color={'GRAY_60'}>
-                      고려사항
-                    </Text>
-                  </div>
-                  <div className={style.infoValue}>
-                    <Text type={'body1_500'} color={'GRAY_90'}>
-                      {data?.therapySession?.specialty &&
-                        COUNSELING_SPECIALTY[data.therapySession.specialty]}
-                    </Text>
-                  </div>
-                </div>
-                <div className={style.infoRow}>
-                  <div className={style.infoLabel}>
-                    <Text type={'body1_400'} color={'GRAY_60'}>
-                      신청정보
-                    </Text>
-                  </div>
-                  <div className={style.infoValue}>
-                    <div className={style.descriptionTitle}>
-                      <Text type={'body1_700'} color={'GRAY_90'}>
-                        {data?.therapySession?.topic &&
-                          COUNSELING_TOPIC[data.therapySession.topic]}
-                      </Text>
-                      <div className={style.counselingStyle}>
-                        <LikeIcon />
-                        <Text type={'caption2_700'} color={'GREEN_80'}>
-                          {data?.therapySession?.style &&
-                            COUNSELING_STYLE[data.therapySession.style]}
-                        </Text>
-                      </div>
-                    </div>
-                    <Text type={'body1_400'} color={'GRAY_80'}>
-                      {data?.therapySession?.noteFromUser}
-                    </Text>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className={style.section}>
-              <h2 className={style.sectionTitle}>
-                <Text type={'heading4_700'} color={'GRAY_90'}>
-                  상담 메모
-                </Text>
-              </h2>
-              <Textarea
-                placeholder={'메모를 입력해주세요'}
-                containerClassName={style.textarea}
-              />
-            </section>
-          </div>
+          <TherapyInfo />
         </div>
 
         <div className={style.bottom}>
@@ -331,38 +204,11 @@ const VideoCallPage = () => {
         </div>
       </div>
 
-      <Modal.WithButton
-        title={'상담 종료하기'}
+      <EndCallModal
+        onCall={onCall}
         isVisible={isEndCallModalVisible}
-        size={'medium'}
-        isPartialDim
-        cancelButton={
-          <Button
-            onClick={() => setIsEndCallModalVisible(false)}
-            styleType={'secondarySmooth'}
-          >
-            취소
-          </Button>
-        }
-        confirmButton={
-          <Button
-            onClick={() => {
-              onCall?.exit();
-              router.back();
-            }}
-            styleType={'primarySolid'}
-          >
-            확인
-          </Button>
-        }
-        contentChildren={
-          <div>
-            <Text type={'body1_500'} color={'GRAY_70'}>
-              상담을 종료하고 상담실에서 나갑니다.
-            </Text>
-          </div>
-        }
-      ></Modal.WithButton>
+        setIsVisible={setIsEndCallModalVisible}
+      />
     </div>
   );
 };

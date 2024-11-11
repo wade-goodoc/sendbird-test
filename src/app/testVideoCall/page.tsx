@@ -7,7 +7,7 @@ import Button from '@/src/components/forms/Button';
 
 // 화사상담 접속 용 테스트 페이지.
 const TestVideoCall = () => {
-  const [user, setUser] = useState('jackson.hong');
+  const [user, setUser] = useState('juice.yoon');
   const authOption = { userId: user };
 
   const authenticateUser = async () => {
@@ -74,12 +74,6 @@ const TestVideoCall = () => {
         // Handle error
       });
   };
-
-  useEffect(() => {
-    SendBirdCall.init('0D5C3247-59D7-4F13-8A4F-446EC0BA4087');
-
-    // authenticateUser();
-  }, []);
 
   return (
     <div className={style.container}>
