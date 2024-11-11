@@ -126,7 +126,7 @@ export const statefyRoom = (
   room.on('remoteAudioSettingsChanged', upsertRemoteParticipant);
   room.on('remoteVideoSettingsChanged', upsertRemoteParticipant);
   room.on('error', (error) => {
-    console.error(error); // TODO:
+    console.error(error);
   });
   return {
     roomId: room.roomId,

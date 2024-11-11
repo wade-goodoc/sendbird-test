@@ -107,6 +107,7 @@ const VideoCallPage = () => {
   // }, []);
 
   const onCall = useMemo(() => {
+    console.log('change rooms');
     return rooms.find((r) => !!r.localParticipant);
   }, [rooms]);
 
@@ -148,6 +149,23 @@ const VideoCallPage = () => {
               </div>
             </div>
 
+            {/*<video*/}
+            {/*  id="remote_video_element"*/}
+            {/*  autoPlay*/}
+            {/*  playsInline*/}
+            {/*  className={style.remoteVideoStyle}*/}
+            {/*></video>*/}
+
+            {/*<div className={style.therapistVideoScreen}>*/}
+            {/*  <video*/}
+            {/*    id="local_video_element"*/}
+            {/*    autoPlay*/}
+            {/*    playsInline*/}
+            {/*    muted*/}
+            {/*    className={style.localVideoStyle}*/}
+            {/*  ></video>*/}
+            {/*</div>*/}
+
             {onCall && (
               <>
                 <video
@@ -157,7 +175,7 @@ const VideoCallPage = () => {
                   className={style.remoteVideoStyle}
                   ref={(el) => {
                     if (!el) return;
-                    onCall?.remoteParticipants[0].setMediaView(el);
+                    onCall?.remoteParticipants[0]?.setMediaView(el);
                   }}
                 ></video>
 
@@ -255,10 +273,10 @@ const VideoCallPage = () => {
                       </Text>
                       <div className={style.counselingStyle}>
                         <LikeIcon />
-                        {/*<Text type={'caption2_700'} color={'GREEN_80'}>*/}
-                        {/*  {data?.therapySession?.style &&*/}
-                        {/*    COUNSELING_STYLE[data.therapySession.style]}*/}
-                        {/*</Text>*/}
+                        <Text type={'caption2_700'} color={'GREEN_80'}>
+                          {data?.therapySession?.style &&
+                            COUNSELING_STYLE[data.therapySession.style]}
+                        </Text>
                       </div>
                     </div>
                     <Text type={'body1_400'} color={'GRAY_80'}>
