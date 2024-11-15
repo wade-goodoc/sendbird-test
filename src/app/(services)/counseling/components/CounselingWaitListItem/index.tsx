@@ -26,7 +26,7 @@ const CounselingWaitListItem = ({ item }: CounselingWaitListItemProps) => {
   const router = useRouter();
 
   const { isTimerStarted, minutes, seconds } = useCounselingCountdownTimer({
-    targetDateTime: item.product.method === 'video' ? '2024-11-15T10:06:00.000+09:00' : ''
+    targetDateTime: item.product.method === 'video' ? '2024-11-15T10:59:00.000+09:00' : ''
   });
 
   const { remainingTime } = useCheckRemainingTime({
