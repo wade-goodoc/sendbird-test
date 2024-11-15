@@ -1,26 +1,24 @@
 'use client';
 
-import { Fragment, useEffect } from 'react';
+import { useEffect } from 'react';
 import Text from '@/src/components/typographies/Text';
 import * as style from './index.css';
-import dayjs from 'dayjs';
 import Button from '@/src/components/forms/Button';
-// import FemaleIcon from '@/src/assets/icons/ic_gender_female.svg';
-import MaleIcon from '@/src/assets/icons/ic_gender_male.svg';
 import TableCell from '@/src/components/dataDisplay/Table/TableCell';
 import TableHeader from '@/src/components/dataDisplay/Table/TableHeader';
-import TableRow from '@/src/components/dataDisplay/Table/TableRow';
 import TableBody from '@/src/components/dataDisplay/Table/TableBody';
-import Link from 'next/link';
-import PageTemplate from '@/src/components/PageTemplate';
-import CounselingStartControl from '@/src/app/(services)/counseling/components/CounselingStartControl';
+import PageTemplate from '../../../../components/templates/PageTemplate';
 import {
   TherapySessionStatusEnum,
   useTherapySessionsQuery
 } from '@/src/gql/generated/graphql';
+import CounselingWaitListItem from '@/src/app/(services)/counseling/components/CounselingWaitListItem';
+import { useRecoilValue } from 'recoil';
+import { meData } from '@/src/store/auth/me';
 
 const CounselingWaitPage = () => {
   const { data } = useTherapySessionsQuery({
+    fetchPolicy: 'no-cache',
     variables: {
       input: {
         status: [TherapySessionStatusEnum.Confirmed, TherapySessionStatusEnum.InProgress]
@@ -28,9 +26,7 @@ const CounselingWaitPage = () => {
     }
   });
 
-  useEffect(() => {
-    console.log('data : ', data);
-  }, [data]);
+  const meQuery = useRecoilValue(meData);
 
   return (
     <PageTemplate
@@ -60,68 +56,15 @@ const CounselingWaitPage = () => {
                 내담자명
               </Text>
             </TableCell>
-            <TableCell width={184}>
+            <TableCell width={160}>
               <Text type="caption1_600" color={'GRAY_70'}>
-                회차
+                상담시작
               </Text>
             </TableCell>
           </TableHeader>
           <TableBody>
-            {data.therapySessions.data.map((item, index) => (
-              <Fragment key={item.id}>
-                <TableRow>
-                  <TableCell width={160} align="left">
-                    <Link href={`/counseling/wait/detail?id=${item.id}`}>
-                      <Text type="body2_500" color={'GRAY_80'}>
-                        {dayjs().format('YYYY.MM.DD HH:mm')}
-                      </Text>
-                    </Link>
-                  </TableCell>
-                  <TableCell width={160}>
-                    <Link href={`/counseling/wait/detail?id=${item.id}`}>
-                      <Text type="body2_500" color={'GRAY_80'}>
-                        {item.product.method === 'video'
-                          ? '50분 화상 상담'
-                          : '50분 채팅 상담'}
-                      </Text>
-                    </Link>
-                  </TableCell>
-                  <TableCell width={160} align={'center'}>
-                    <Link href={`/counseling/wait/detail?id=${item.id}`}>
-                      <Text
-                        className={style.therapyName}
-                        type="body2_500"
-                        color={'GRAY_80'}
-                      >
-                        {/*<FemaleIcon width={22} height={22} />*/}
-                        <MaleIcon width={22} height={22} />
-                        {item.therapyUser.nickname}
-                      </Text>
-                    </Link>
-                  </TableCell>
-                  <TableCell width={160}>
-                    <Link href={`/counseling/wait/detail?id=${item.id}`}>
-                      <Text type="body2_500" color={'GRAY_80'}>
-                        {4}회차
-                      </Text>
-                    </Link>
-                  </TableCell>
-                  <TableCell width={320} align={'right'}>
-                    <Text type="body2_500" color={'GRAY_70'}>
-                      9분 59초 후 예정
-                    </Text>
-                  </TableCell>
-                </TableRow>
-                {index === 1 && (
-                  <TableRow>
-                    <td colSpan={5} width={960}>
-                      <div className={style.subTableRow}>
-                        <CounselingStartControl size={'small'} />
-                      </div>
-                    </td>
-                  </TableRow>
-                )}
-              </Fragment>
+            {data.therapySessions.data.map((item) => (
+              <CounselingWaitListItem key={item.id} item={item} />
             ))}
           </TableBody>
         </table>

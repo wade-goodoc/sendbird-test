@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Text from '@/src/components/typographies/Text';
-import * as style from './index.css';
 import dayjs from 'dayjs';
 import Button from '@/src/components/forms/Button';
 import FemaleIcon from '@/src/assets/icons/ic_gender_female.svg';
@@ -12,19 +11,37 @@ import TableCell from '@/src/components/dataDisplay/Table/TableCell';
 import TableHeader from '@/src/components/dataDisplay/Table/TableHeader';
 import TableRow from '@/src/components/dataDisplay/Table/TableRow';
 import TableBody from '@/src/components/dataDisplay/Table/TableBody';
-import Modal from '@/src/components/overlays/Modal';
+import { useSetRecoilState } from 'recoil';
+import { counselingReservationModal } from '@/src/store/counseling';
+import CounselingReservationModal from '@/src/app/(services)/counseling/reservation/CounselingReservationModal';
+import { useRouter } from 'next/navigation';
+import PageTemplate from '../../../../components/templates/PageTemplate';
+import {
+  GenderEnum,
+  ProductMethodEnum,
+  TherapySessionStatusEnum,
+  useTherapySessionsQuery
+} from '@/src/gql/generated/graphql';
 
 export default function CounselingReservationPage() {
+  const setModal = useSetRecoilState(counselingReservationModal);
+  const router = useRouter();
+
+  const { data, loading, refetch } = useTherapySessionsQuery({
+    variables: {
+      input: {
+        status: [TherapySessionStatusEnum.Requested]
+      }
+    }
+  });
+
+  if (loading) return <p>Loading UI</p>;
+
   return (
-    <main className={style.container}>
-      <h1 className={style.title}>
-        <Text type="heading3_700" color={'GRAY_90'}>
-          예약대기
-        </Text>
-      </h1>
+    <PageTemplate title={'예약대기'}>
       <Table>
         <TableHeader>
-          <TableCell width={160} align="left">
+          <TableCell width={160}>
             <Text type="caption1_600" color={'GRAY_70'}>
               신청일시
             </Text>
@@ -39,82 +56,62 @@ export default function CounselingReservationPage() {
               내담자명
             </Text>
           </TableCell>
-          <TableCell width={184}>
-            <Text type="caption1_600" color={'GRAY_70'}>
-              회차
-            </Text>
-          </TableCell>
+          <TableCell width={184}></TableCell>
         </TableHeader>
         <TableBody>
-          {[1, 2, 3, 4].map((item) => (
-            <TableRow>
+          {data?.therapySessions.data.map((item) => (
+            <TableRow
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/counseling/reservation/detail?therapySessionId=${1}`);
+              }}
+            >
               <TableCell width={160} align="left">
                 <Text type="body2_500" color={'GRAY_80'}>
-                  {dayjs().format('YYYY.MM.DD HH:mm')}
+                  {dayjs(item.createdAt).format('YYYY.MM.DD HH:mm')}
                 </Text>
               </TableCell>
               <TableCell width={160}>
                 <Text type="body2_500" color={'GRAY_80'}>
-                  50분 화상 상담
+                  {item.product.method === ProductMethodEnum.Video
+                    ? '50분 화상상담'
+                    : '50분 채팅상담'}
                 </Text>
               </TableCell>
               <TableCell width={160}>
+                {item.therapyUser.gender === GenderEnum.Female ? (
+                  <FemaleIcon width={22} height={22} />
+                ) : (
+                  <MaleIcon width={22} height={22} />
+                )}
+                &nbsp;
                 <Text type="body2_500" color={'GRAY_80'}>
-                  {true ? (
-                    <FemaleIcon width={22} height={22} />
-                  ) : (
-                    <MaleIcon width={22} height={22} />
-                  )}
-                  박마음
+                  {item.therapyUser.nickname}
                 </Text>
               </TableCell>
-              <TableCell width={184}>
-                <div className={style.buttonContainer}>
-                  <Text type="body2_500" color={'GRAY_80'}>
-                    {4}회차
-                  </Text>
-                  <Button styleType="primarySmooth" size="small">
-                    예약확정
-                  </Button>
-                </div>
+              <TableCell width={320} align={'right'}>
+                <Button
+                  styleType="primarySmooth"
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setModal({
+                      isVisible: true,
+                      item: item,
+                      onNext: () => {
+                        refetch();
+                      }
+                    });
+                  }}
+                >
+                  예약확정
+                </Button>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <Modal.WithButton
-        isVisible={true}
-        size="medium"
-        variant="basic"
-        title="예약 일정"
-        cancelButton={
-          <Button styleType="secondarySmooth" size="small">
-            닫기
-          </Button>
-        }
-        confirmButton={
-          <Button styleType="primarySolid" size="small">
-            확정하기
-          </Button>
-        }
-        isPartialDim={true}
-        closeModalHandler={() => {}}
-        contentChildren={
-          <div>
-            <Text type="heading5_600" color={'GRAY_90'}>
-              {true ? <FemaleIcon /> : <MaleIcon />}
-              박마음 (30대)
-            </Text>
-            <Text type="body1_500" color={'GRAY_80'}>
-              날짜
-            </Text>
-
-            <Text type="body1_500" color={'GRAY_80'}>
-              시간
-            </Text>
-          </div>
-        }
-      ></Modal.WithButton>
-    </main>
+      <CounselingReservationModal />
+    </PageTemplate>
   );
 }

@@ -63,7 +63,7 @@ const Toast = () => {
   return (
     <Portal.Consumer>
       <div className={styles.overlay}>
-        <div className={styles.container({ isVisible: !!toast })}>
+        <div className={styles.container({ isVisible: !!toast, type })}>
           {renderToastIcon()}
           <Text type="body1_400" color={'WHITE'} className={styles.label}>
             {label}

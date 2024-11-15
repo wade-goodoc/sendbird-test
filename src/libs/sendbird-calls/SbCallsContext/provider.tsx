@@ -22,19 +22,25 @@ import {
 import { useRecoilValue } from 'recoil';
 import { therapistInfo } from '@/src/store/auth/index';
 import useToast from '@/src/hooks/toast/useToast';
+import { meData } from '@/src/store/auth/me';
 
 const SbCallsProvider = ({ children }: { children: ReactElement }): JSX.Element => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { sendbirdUserId } = useRecoilValue(therapistInfo);
+  const meQuery = useRecoilValue(meData);
   // const { calls } = state;
   // const currentCall = useMemo(() => calls.find((call) => !call.isEnded), [calls]);
   // const isBusy = useMemo(() => calls.some((call) => !call.isEnded), [calls]);
 
   const init = async (appId: string) => {
+    if (!meQuery) return;
+
     SendbirdCall.init(appId);
 
     const user = await SendBirdCall.authenticate(
-      { userId: sendbirdUserId },
+      {
+        userId: meQuery?.sendbirdUserId || ''
+        // accessToken: '2dd6f702f86f7795200157bd9263c8dd91abd667'
+      },
       (result, error) => {
         if (error) console.log('authentication error', error);
         if (result) console.log('authentication success', result);
@@ -48,8 +54,8 @@ const SbCallsProvider = ({ children }: { children: ReactElement }): JSX.Element 
   };
 
   useEffect(() => {
-    init(process.env.NEXT_PUBLIC_SENDBIRD_APPID || '');
-  }, []);
+    if (meQuery) init(process.env.NEXT_PUBLIC_SENDBIRD_APPID || '');
+  }, [meQuery]);
 
   const ringingListenerId = 'sb-call-listener';
   const auth = async (authOption: AuthOption) => {
@@ -157,18 +163,22 @@ const SbCallsProvider = ({ children }: { children: ReactElement }): JSX.Element 
   const fetchRoomById = useCallback<ContextType['fetchRoomById']>(
     async (roomId) => {
       const room = await SendbirdCall.fetchRoomById(roomId);
-      console.log('1 : ', room);
       const statefulRoom = statefyRoom(room, dispatch, showToast);
-      console.log('2 : ', statefulRoom);
       if (state.rooms.find((x) => x.roomId === room.roomId)) {
+        console.log('3');
         dispatch({ type: 'UPDATE_ROOM', payload: statefulRoom });
       } else {
+        console.log('2');
         dispatch({ type: 'ADD_ROOM', payload: statefulRoom });
       }
       return statefulRoom;
     },
     [state.rooms]
   );
+
+  const clearRooms = () => {
+    dispatch({ type: 'CLEAR_ROOMS' });
+  };
 
   const callContext: ContextType = {
     ...initialContext,
@@ -194,11 +204,12 @@ const SbCallsProvider = ({ children }: { children: ReactElement }): JSX.Element 
     // Rooms
     createRoom,
     getCachedRoomById,
-    fetchRoomById
+    fetchRoomById,
     // RoomType
+
+    clearRooms
   };
 
-  console.log('call context', callContext.calls, callContext.calls.length);
   return <CallContext.Provider value={callContext}>{children}</CallContext.Provider>;
 };
 

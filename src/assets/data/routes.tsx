@@ -36,7 +36,7 @@ export const Routes = [
       {
         id: '',
         name: '상담내역',
-        path: '/counseling/list',
+        path: '/counseling/history',
         icon: <CounselingListIcon width={24} height={24} color={COLORS.GRAY_60} />,
         grant: '',
         depth: 1,

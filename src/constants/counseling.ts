@@ -26,3 +26,13 @@ export const COUNSELING_TOPIC = {
   [CounselingTopicEnum.RelationshipAndMarriage]: '연애 및 부부',
   [CounselingTopicEnum.WorkAndCareer]: '직장 및 진로'
 };
+
+export const CANCEL_REASONS = [
+  { value: '1', label: '내담자 무응답/연락두절' },
+  { value: '2', label: '일정 조율이 어려움' },
+  { value: '3', label: '내담자의 부적절한 언행' },
+  { value: '4', label: '내담자의 취소 요청' },
+  { value: '5', label: '상담사의 불가피한 사유' },
+  { value: '6', label: '서비스/네트워크 문제 발생' },
+  { value: '7', label: '직접 입력' }
+];

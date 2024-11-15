@@ -1,0 +1,7 @@
+<svg width="currentWidth" height="currentHeight" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g id="ic_arrow">
+        <path id="Vector (Stroke)" fill-rule="evenodd" clip-rule="evenodd"
+              d="M9.41071 3.57709C9.08527 3.90252 9.08527 4.43016 9.41071 4.7556L14.6548 9.99967L9.41071 15.2438C9.08527 15.5692 9.08527 16.0968 9.41071 16.4223C9.73614 16.7477 10.2638 16.7477 10.5892 16.4223L16.4225 10.5889C16.748 10.2635 16.748 9.73586 16.4225 9.41042L10.5892 3.57709C10.2638 3.25165 9.73614 3.25165 9.41071 3.57709Z"
+              fill="currentColor"/>
+    </g>
+</svg>

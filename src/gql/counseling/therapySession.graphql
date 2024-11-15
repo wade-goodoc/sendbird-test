@@ -4,19 +4,23 @@ query TherapySession($therapySessionId: String!) {
     createdAt
     product {
       method
+      price
     }
-    specialty
+    specialties
     productId
     style
     topic
     therapyUser {
       nickname
       sendbirdUserId
-      therapySessions {
-        id
-      }
+      age
+      gender
     }
     noteToUser
     noteFromUser
+    callsRoomId
+    scheduledStartTime
+    scheduledEndTime
+    uuid
   }
 }

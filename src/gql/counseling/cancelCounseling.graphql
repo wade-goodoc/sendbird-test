@@ -1,0 +1,5 @@
+mutation CancelCounseling($reason: String!, $therapySessionId: String!) {
+  cancelCounseling(reason: $reason, therapySessionId: $therapySessionId) {
+    id
+  }
+}

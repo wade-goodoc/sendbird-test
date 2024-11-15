@@ -3,7 +3,7 @@ import { FontWeight, Scale, TextProps } from './type';
 import { textStyle } from '@/src/components/typographies/Text/index.css';
 
 const Text: FC<TextProps> = (props) => {
-  const { type, color, className, children } = props;
+  const { type, color = 'GRAY_100', className, children } = props;
 
   const styles = type.split('_') as [Scale, FontWeight];
   const scale: Scale = styles[0];

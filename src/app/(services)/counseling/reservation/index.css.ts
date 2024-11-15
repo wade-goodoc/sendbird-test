@@ -7,6 +7,3 @@ export const container = style({
 export const title = style({
   padding: '40px 0 24px 0 '
 });
-export const buttonContainer = style({
-  display: 'flex'
-});

@@ -3,5 +3,9 @@ query Me {
     id
     email
     createdAt
+    sendbirdUserId
+    profile {
+      name
+    }
   }
 }

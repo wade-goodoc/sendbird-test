@@ -18,7 +18,7 @@ const SelectMenuItem: React.FC<SelectMenuItemProps> = ({
       onClick={() => !disabled && onClick?.(item, index)}
     >
       {item.label}
-      {selected && <Check />}
+      {selected && <Check width={16} height={16} />}
     </div>
   );
 };

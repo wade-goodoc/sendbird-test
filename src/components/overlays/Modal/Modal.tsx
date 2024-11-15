@@ -32,7 +32,7 @@ const Modal = ({
           >
             {title && (
               <div className={style.modalHeader}>
-                <Text type="heading5_700">{title}</Text>
+                <Text type="heading4_700">{title}</Text>
                 {!!closeModalHandler && (
                   <div className={style.closeIcon}>
                     <CloseIcon

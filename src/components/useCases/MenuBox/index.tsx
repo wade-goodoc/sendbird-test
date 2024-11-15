@@ -4,27 +4,28 @@ import OutwardArrowIcon from '@/src/assets/icons/ic_arrow_outward.svg';
 import { COLORS } from '@/src/styles/colors';
 import DefaultProfileImage from '@/src/assets/images/img_profile_default.svg';
 import { outlink } from '@/src/assets/data/outlink';
+import { useRecoilValue } from 'recoil';
+import { meData } from '@/src/store/auth/me';
 
 const MenuBox = ({ isVisible }: { isVisible: boolean }) => {
+  const meQuery = useRecoilValue(meData);
+
   return (
     isVisible && (
       <div className={style.menuContainer}>
         <div className={style.profileContainer}>
-          {true ? (
-            <img
-              className={style.profile}
-              src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDAzMTFfMTcz%2FMDAxNzEwMTM1MTI3Mzg5.Rbubo-ahAj4TTo7fu3FKlujqsmNnNB6S5NHR7Wm3gwog.-mtIIyoxy6O__olgj2Ju-FaDAVwAhl2xZJ_QHEmlv9cg.PNG%2Fimage.png&type=a340"
-            />
-          ) : (
-            <DefaultProfileImage />
-          )}
+          <img
+            className={style.profile}
+            src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDAzMTFfMTcz%2FMDAxNzEwMTM1MTI3Mzg5.Rbubo-ahAj4TTo7fu3FKlujqsmNnNB6S5NHR7Wm3gwog.-mtIIyoxy6O__olgj2Ju-FaDAVwAhl2xZJ_QHEmlv9cg.PNG%2Fimage.png&type=a340"
+          />
+          {/*<DefaultProfileImage />*/}
           <div>
             <Text type="heading4_600" color={'GRAY_80'}>
-              윤주혜
+              {meQuery?.profile?.name}
             </Text>
             <br />
             <Text type="caption1_400" color={'GRAY_60'}>
-              goodoc_sd@google.co.kr
+              {meQuery?.email}
             </Text>
           </div>
         </div>

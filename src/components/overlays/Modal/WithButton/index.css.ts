@@ -14,8 +14,7 @@ export const modalContainer = recipe({
   variants: {
     size: {
       small: {
-        width: 360,
-
+        width: 440,
         '@media': {
           [mq.mobile]: {
             width: 'calc(100vw - 40px)',
@@ -24,7 +23,7 @@ export const modalContainer = recipe({
         }
       },
       medium: {
-        width: 440,
+        width: 560,
 
         '@media': {
           [mq.mobile]: {
@@ -71,7 +70,7 @@ export const buttonContainer = recipe({
     display: 'flex',
     columnGap: '8px',
     justifyContent: 'flex-end',
-    padding: '20px 0'
+    padding: '24px 0'
   },
   variants: {
     variant: {

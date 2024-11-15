@@ -30,6 +30,8 @@ export type ContextType = State & {
   getCachedRoomById: (roomId: string) => StatefulRoom | undefined;
   fetchRoomById: (roomId: string) => Promise<StatefulRoom>;
   RoomType: typeof RoomType;
+
+  clearRooms: () => void;
 };
 
 const stub = (): never => {
@@ -60,7 +62,9 @@ export const initialContext: ContextType = {
   createRoom: stub,
   getCachedRoomById: stub,
   fetchRoomById: stub,
-  RoomType: RoomType
+  RoomType: RoomType,
+
+  clearRooms: stub
 };
 
 const CallContext = createContext<ContextType>(initialContext);

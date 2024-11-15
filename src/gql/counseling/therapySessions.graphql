@@ -2,12 +2,23 @@ query TherapySessions($input: TherapistTherapySessionsQueryInput!) {
   therapySessions(input: $input) {
     data {
       id
+      createdAt
+      status
       therapyUser {
-        nickname
         sendbirdUserId
+        nickname
+        age
+        gender
+        sendbirdUserId
+        userId
       }
+      createdAt
+      callsRoomId
+      scheduledStartTime
+      scheduledEndTime
       product {
         method
+        price
       }
     }
     totalCount

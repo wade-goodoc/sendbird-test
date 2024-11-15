@@ -4,25 +4,49 @@ import Text from '@/src/components/typographies/Text';
 import InfoIcon from '@/src/assets/icons/ic_info.svg';
 import AdjustIcon from '@/src/assets/icons/ic_adjust.svg';
 import MicrophoneIcon from '@/src/assets/icons/ic_microphone.svg';
-import VideoIcon from '@/src/assets/icons/ic_video.svg';
+import MicrophoneOffIcon from '@/src/assets/icons/ic_microphone_off.svg';
+import CameraIcon from '@/src/assets/icons/ic_camera.svg';
+import CameraOffIcon from '@/src/assets/icons/ic_camera_off.svg';
 import CallEndIcon from '@/src/assets/icons/ic_call_end.svg';
 import LoadingIcon from '@/src/assets/icons/ic_loading.svg';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { useSbCalls } from '@/src/libs/sendbird-calls';
 import EndCallModal from '@/src/app/videoCall/components/EndCallModal';
 import TherapyInfo from '@/src/app/videoCall/components/TherapyInfo';
+import { useStartCounselingMutation } from '@/src/gql/generated/graphql';
+import useToast from '@/src/hooks/toast/useToast';
+import { ApolloError } from '@apollo/client';
+import { useRecoilState } from 'recoil';
+import { roomIdOnCall as roomIdInStore } from '@/src/store/counseling';
 // import useSendbird from '@/src/hooks/sendbird/useSendbird';
 
 const VideoCallPage = () => {
   const sbCalls = useSbCalls();
   const { user, rooms } = sbCalls;
+  const searchParams = useSearchParams();
   const router = useRouter();
 
-  const enterRoom = async () => {
-    const room = await sbCalls.fetchRoomById('23328a6c-4f9b-43c4-83d1-9790b4e959d7');
+  const therapySessionId = searchParams.get('therapySessionId');
+  const roomId = searchParams.get('roomId');
 
-    console.log('room22 : ', room, room.localParticipant);
+  const { showToast } = useToast();
+
+  const [startCounseling] = useStartCounselingMutation({
+    variables: {
+      therapySessionId: therapySessionId || ''
+    },
+    onError: (error: ApolloError) => {
+      showToast({ type: 'error', label: error.message }, 3000);
+    }
+  });
+
+  const [roomIdOnCall, setRoomIdOnCall] = useRecoilState(roomIdInStore);
+
+  const enterRoom = async () => {
+    if (!roomId) return;
+
+    const room = await sbCalls.fetchRoomById(roomId);
 
     const enterParams = {
       videoEnabled: true,
@@ -33,6 +57,8 @@ const VideoCallPage = () => {
       .enter(enterParams)
       .then(() => {
         console.log('enter room success');
+        if (!roomIdOnCall) startCounseling();
+        setRoomIdOnCall(roomId);
       })
       .catch((e) => {
         console.log('enter room failed');
@@ -76,6 +102,10 @@ const VideoCallPage = () => {
 
   const onCall = useMemo(() => {
     return rooms.find((r) => !!r.localParticipant);
+  }, [rooms]);
+
+  useEffect(() => {
+    console.log('change rooms : ', rooms);
   }, [rooms]);
 
   useEffect(() => {
@@ -141,7 +171,7 @@ const VideoCallPage = () => {
             {/*  ></video>*/}
             {/*</div>*/}
 
-            {onCall && (
+            {onCall?.remoteParticipants[0] && (
               <video
                 id="remote_video_element"
                 autoPlay
@@ -149,13 +179,13 @@ const VideoCallPage = () => {
                 className={style.remoteVideoStyle}
                 ref={(el) => {
                   if (!el) return;
-                  onCall?.remoteParticipants[0]?.setMediaView(el);
+                  onCall.remoteParticipants[0].setMediaView(el);
                 }}
               ></video>
             )}
 
             <div className={style.therapistVideoScreen}>
-              {onCall && (
+              {onCall?.localParticipant && (
                 <video
                   id="local_video_element"
                   autoPlay
@@ -164,7 +194,7 @@ const VideoCallPage = () => {
                   className={style.localVideoStyle}
                   ref={(el) => {
                     if (!el) return;
-                    onCall?.localParticipant.setMediaView(el);
+                    onCall.localParticipant.setMediaView(el);
                   }}
                 ></video>
               )}
@@ -181,13 +211,44 @@ const VideoCallPage = () => {
           <Text type={'body1_700'} color={'WHITE'}>
             00:38
           </Text>
+
           <div className={style.bottomRightButtons}>
-            <button className={style.bottomIconButton} type={'button'}>
-              <MicrophoneIcon />
-            </button>
-            <button className={style.bottomIconButton} type={'button'}>
-              <VideoIcon />
-            </button>
+            {onCall?.localParticipant?.isAudioEnabled ? (
+              <button
+                className={style.bottomIconButton}
+                type={'button'}
+                onClick={() => onCall?.localParticipant?.muteMicrophone()}
+              >
+                <MicrophoneIcon />
+              </button>
+            ) : (
+              <button
+                className={style.bottomIconButton}
+                type={'button'}
+                onClick={() => onCall?.localParticipant?.unmuteMicrophone()}
+              >
+                <MicrophoneOffIcon />
+              </button>
+            )}
+
+            {onCall?.localParticipant?.isVideoEnabled ? (
+              <button
+                className={style.bottomIconButton}
+                type={'button'}
+                onClick={() => onCall?.localParticipant?.stopVideo()}
+              >
+                <CameraIcon />
+              </button>
+            ) : (
+              <button
+                className={style.bottomIconButton}
+                type={'button'}
+                onClick={() => onCall?.localParticipant?.startVideo()}
+              >
+                <CameraOffIcon />
+              </button>
+            )}
+
             <button
               className={style.callEndButton}
               type={'button'}
@@ -205,6 +266,7 @@ const VideoCallPage = () => {
       </div>
 
       <EndCallModal
+        therapySessionId={therapySessionId || ''}
         onCall={onCall}
         isVisible={isEndCallModalVisible}
         setIsVisible={setIsEndCallModalVisible}

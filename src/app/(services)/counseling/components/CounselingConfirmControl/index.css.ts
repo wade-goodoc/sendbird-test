@@ -2,6 +2,7 @@ import { style } from '@vanilla-extract/css';
 import { COLORS } from '@/src/styles/colors';
 
 export const container = style({
+  width: '100%',
   backgroundColor: COLORS.ALPHA_BLUE_10,
   border: `1px solid ${COLORS.ALPHA_BLUE_15}`,
   borderRadius: 8,

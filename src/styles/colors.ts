@@ -21,6 +21,7 @@ export const COLORS = {
   ALPHA_WHITE_95: 'rgba(255, 255, 255, 0.95)',
 
   BLACK: '#000000',
+  ALPHA_BLACK_01: 'rgba(0, 0, 0, 0.01)',
   ALPHA_BLACK_05: 'rgba(0, 0, 0, 0.05)',
   ALPHA_BLACK_10: 'rgba(0, 0, 0, 0.10)',
   ALPHA_BLACK_15: 'rgba(0, 0, 0, 0.15)',

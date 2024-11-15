@@ -39,7 +39,6 @@ const TestVideoCall = () => {
   const enterRoom = async () => {
     SendBirdCall.fetchRoomById('23328a6c-4f9b-43c4-83d1-9790b4e959d7')
       .then(async (room) => {
-        console.log('get room : ', room);
         // `room` with the identifier `ROOM_ID` is fetched from the Sendbird Server.
         const enterParams = {
           videoEnabled: true,
@@ -121,15 +120,14 @@ const TestVideoCall = () => {
             ></video>
           </div>
 
-          <div style={{ width: 200, height: 360 }}>
+          <div style={{ width: 200, height: 360, backgroundColor: '#999' }}>
             <video
               id="remote_video_element_id"
               autoPlay
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'cover',
-                backgroundColor: '#999'
+                objectFit: 'cover'
               }}
             ></video>
           </div>

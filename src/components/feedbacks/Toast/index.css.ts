@@ -41,8 +41,6 @@ export const container = recipe({
     columnGap: 10,
     padding: '12px 20px',
     borderRadius: 8,
-    backgroundColor: COLORS.GRAY_80,
-
     boxShadow: '0 2px 1px rgba(22, 24, 29, 0.02), 0 2px 8px rgba(22, 24, 29, 0.1)',
 
     '@media': {
@@ -68,6 +66,20 @@ export const container = recipe({
       },
       false: {
         animation: `${fadeOut} 0.25s ease-out forwards`
+      }
+    },
+    type: {
+      information: {
+        backgroundColor: COLORS.GRAY_80
+      },
+      success: {
+        backgroundColor: COLORS.BLUE_60
+      },
+      error: {
+        backgroundColor: COLORS.RED_60
+      },
+      warning: {
+        backgroundColor: COLORS.GRAY_80
       }
     }
   }

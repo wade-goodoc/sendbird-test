@@ -2,7 +2,7 @@ import * as style from './index.css';
 import Modal from '@/src/components/overlays/Modal';
 import Text from '@/src/components/typographies/Text';
 import Button from '@/src/components/forms/Button';
-import Accordion from '@/src/components/forms/Accordion';
+import Accordion from '../../../../../components/dataDisplay/Accordion';
 import { COLORS } from '@/src/styles/colors';
 import CheckIcon from '@/src/assets/icons/ic_check_light.svg';
 import { allAgreeButton } from './index.css';

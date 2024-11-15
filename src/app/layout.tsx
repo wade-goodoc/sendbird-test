@@ -10,7 +10,9 @@ import { ApolloProvider } from '@apollo/client';
 import { Portal } from '@/src/app/portal';
 import Toast from '@/src/components/feedbacks/Toast';
 import Script from 'next/script';
+import Modal from '../components/overlays/Modal';
 import { SbCallsProvider } from '@/src/libs/sendbird-calls';
+import Auth from '@/src/components/auth';
 
 export default function RootLayout({
   children
@@ -54,8 +56,10 @@ export default function RootLayout({
           <RecoilRoot>
             <SbCallsProvider>
               <Portal.Provider>
+                <Auth />
                 {children}
                 <Toast />
+                <Modal.Confirm />
               </Portal.Provider>
             </SbCallsProvider>
           </RecoilRoot>

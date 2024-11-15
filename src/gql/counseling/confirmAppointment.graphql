@@ -1,0 +1,5 @@
+mutation ConfirmAppointment($scheduledTime: KSTDateTime!, $therapySessionId: String!) {
+  confirmAppointment(scheduledTime: $scheduledTime, therapySessionId: $therapySessionId) {
+    id
+  }
+}

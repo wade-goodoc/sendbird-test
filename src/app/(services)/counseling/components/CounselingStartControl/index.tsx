@@ -7,10 +7,20 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 type CounselingStartControlProps = {
+  therapySessionId: string;
   size?: 'small' | 'medium';
+  minutes?: number;
+  seconds?: number;
+  roomId?: string;
 };
 
-const CounselingStartControl = ({ size = 'medium' }: CounselingStartControlProps) => {
+const CounselingStartControl = ({
+  therapySessionId,
+  size = 'medium',
+  minutes,
+  seconds,
+  roomId
+}: CounselingStartControlProps) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const router = useRouter();
@@ -25,7 +35,7 @@ const CounselingStartControl = ({ size = 'medium' }: CounselingStartControlProps
       </div>
       <div className={style.buttonWrap}>
         <Text type={'body1_500'} color={'WHITE'}>
-          9분 10초 후 예정
+          {!!minutes && `${minutes}분`} {seconds}초 후 예정
         </Text>
         <Button
           styleType={'primaryReverseSolid'}
@@ -48,7 +58,11 @@ const CounselingStartControl = ({ size = 'medium' }: CounselingStartControlProps
             </Button>
             <Button
               styleType={'primarySolid'}
-              onClick={() => router.push(`/videoCall?id=1`)}
+              onClick={() =>
+                router.push(
+                  `/videoCall?therapySessionId=${therapySessionId}&roomId=${roomId}`
+                )
+              }
             >
               시작하기
             </Button>

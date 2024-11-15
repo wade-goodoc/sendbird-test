@@ -1,0 +1,5 @@
+mutation CompleteCounseling($therapySessionId: String!) {
+  completeCounseling(therapySessionId: $therapySessionId) {
+    id
+  }
+}

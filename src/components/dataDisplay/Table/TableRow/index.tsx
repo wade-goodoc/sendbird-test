@@ -1,7 +1,14 @@
 import * as style from './index.css';
-import React, { ReactNode } from 'react';
+import React, { HTMLAttributes, ReactNode } from 'react';
 
-const TableRow = ({ children }: { children: ReactNode }) => {
-  return <tr className={style.column}>{children}</tr>;
+const TableRow = (
+  props: { children: ReactNode } & HTMLAttributes<HTMLTableRowElement>
+) => {
+  const { children, ...rest } = props;
+  return (
+    <tr className={style.column} {...rest}>
+      {children}
+    </tr>
+  );
 };
 export default TableRow;

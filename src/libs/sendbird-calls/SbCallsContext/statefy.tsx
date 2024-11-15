@@ -94,7 +94,6 @@ export const statefyRoom = (
     });
   };
 
-  console.log('3 : ', room.localParticipant);
   const statefulLocalParticipants = room.localParticipant
     ? [statefyLocalParticipant(room.localParticipant, updateLocalParticipant)]
     : [];
@@ -120,7 +119,7 @@ export const statefyRoom = (
   const remoteParticipantEntered = (participant: RemoteParticipant) => {
     upsertRemoteParticipant(participant);
 
-    showToast({ type: 'information', label: '내담자가 상담실에 입장했습니다.' });
+    showToast({ type: 'success', label: '내담자가 상담실에 입장했습니다.' }, 3000);
   };
 
   room.on('remoteParticipantEntered', remoteParticipantEntered);

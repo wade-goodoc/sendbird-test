@@ -61,11 +61,12 @@ export const animation = recipe({
 
 export const ContentContainer = style({
   backgroundColor: COLORS.WHITE,
-  borderRadius: 16
+  borderRadius: 16,
+  padding: '24px 0 0 0'
 });
 
 export const modalHeader = style({
-  padding: '16px 12px 8px 20px',
+  padding: '0 24px',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center'
